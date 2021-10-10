@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
-    "start": "./node_modules/.bin/tsc && node ./obj/main.js"
+    "start": "./node_modules/.bin/tsc && node ./obj/main.js",
+    "deploy": "netlify deploy --prod"
   },
   "repository": {
     "type": "git",

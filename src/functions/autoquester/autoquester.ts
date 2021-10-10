@@ -127,7 +127,6 @@ export const handler: Handler = async(event, context) =>
 {
     var body = event.body;
     console.log(body);
-    body = JSON.stringify(event);
 
     await autoquesterFunc(body);
 
