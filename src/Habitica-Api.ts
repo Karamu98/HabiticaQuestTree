@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { error } from "console";
 import { TagsRequestConvert, TagsRequestData } from "./TagsRequestData";
 import { TasksRequest, TasksRequestConvert } from "./TasksRequestData";
 
@@ -20,7 +21,7 @@ export class HabiticaAPI
         }
     }
 
-    private v3_request(method: HTTPNAMES, path: string, data?): Promise<any>
+    private v3_request(method: HTTPNAMES, path: string, data = null): Promise<any>
     {
         var curConfig = this.default_config;
 
@@ -37,7 +38,11 @@ export class HabiticaAPI
                     return axios.get(path, curConfig).then((response) =>
                     {
                         return JSON.stringify(response.data);
+                    }).catch((error) =>
+                    {
+                        console.log(`Failed GET request with path ${path} and config (${curConfig})`);
                     });
+                    break;
                 }
             case 'PUT':
                 {
@@ -47,6 +52,9 @@ export class HabiticaAPI
                         return axios.put(path, data, curConfig).then((response) =>
                         {
                             return response.data;
+                        }).catch((error) =>
+                        {
+                            console.log(`Failed PUT request with path ${path} and config (${curConfig}). Data: ${data}.`);
                         })
                     }
                     else
@@ -54,8 +62,12 @@ export class HabiticaAPI
                         return axios.put(path, "", curConfig).then((response) =>
                         {
                             return response.data;
+                        }).catch((error) =>
+                        {
+                            console.log(`Failed PUT request with path ${path} and config (${curConfig}). No Data.`);
                         });
                     }
+                    break;
                 }
             default:
                 {
@@ -69,50 +81,80 @@ export class HabiticaAPI
 
     async GetAllTasks(): Promise<TasksRequest>
     {
-        console.log("Getting all tasks...");
-        return this.v3_request('GET', "/tasks/user").then((rawData) =>
+        try
         {
-            var parsedData: TasksRequest = null;
-            if(rawData != null)
+            var outData: TasksRequest = null;
+
+            console.log("Getting all tasks....");
+            await this.v3_request('GET', "/tasks/user").then((rawData) =>
             {
-                parsedData = TasksRequestConvert.ToData(rawData);
+                if(rawData != null)
+                {
+                    outData = TasksRequestConvert.ToData(rawData);
+                }
+                else
+                {
+                    throw new Error("Couldn't parse task request data");                
+                }
+    
+                console.log(`Fetched all tasks: ${outData}`);
+            });
+            
+            return outData;
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
+    }
+
+    async Update_Task(task_id: string, data = null): Promise<void>
+    {
+        try
+        {
+            if(data != null)
+            {
+                console.log(`Updating ${task_id}, with data: ${data}`);
+                await this.v3_request('PUT', "/tasks/" + task_id, data);
             }
             else
             {
-                throw new Error("Couldn't parse task request data");                
+                console.log(`Sending PUT to task (${task_id}) with no data`);
+                await this.v3_request('PUT', "/tasks/" + task_id, null);
             }
-
-            console.log(`Fetched all tasks: ${parsedData}`);
-
-            return parsedData;
-        });
-    }
-
-    async Update_Task(task_id: string, data): Promise<void>
-    {
-        console.log(`Updating ${task_id}, with data: ${data}`);
-        return this.v3_request('PUT', "/tasks/" + task_id, data);
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
     }
 
     async GetAllTags(): Promise<TagsRequestData>
     {
-        console.log("Getting all tags...");
-        return this.v3_request('GET', "/tags").then((rawData) => 
+        try
         {
-            var parsedData: TagsRequestData = null;
-            if(rawData != null)
+            console.log("Getting all tags...");
+            return this.v3_request('GET', "/tags").then((rawData) => 
             {
-                parsedData = TagsRequestConvert.ToData(rawData);
-            }
-            else
-            {
-                throw new Error("Couldn't parse tags request data");
-            }
+                var parsedData: TagsRequestData = null;
+                if(rawData != null)
+                {
+                    parsedData = TagsRequestConvert.ToData(rawData);
+                }
+                else
+                {
+                    throw new Error("Couldn't parse tags request data");
+                }
 
-            console.log(`Fetched all tags: ${parsedData}`);
+                console.log(`Fetched all tags: ${parsedData}`);
 
-            return parsedData;
-        });
+                return parsedData;
+            });
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
     }
 
 
