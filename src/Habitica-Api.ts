@@ -11,13 +11,14 @@ export class HabiticaAPI
         {
             headers:
             {
+                'Content-Type': 'application/json',
                 'x-api-user': this.user_id,
                 'x-api-key': this.api_token
             }
         }
     }
 
-    private v3_request(method: HTTPNAMES, path: string, data?)
+    private v3_request(method: HTTPNAMES, path: string, data?): Promise<any>
     {
         var curConfig = this.default_config;
 
@@ -31,31 +32,28 @@ export class HabiticaAPI
         {
             case 'GET':
                 {
-                    axios.get(path, curConfig).then((response) =>
+                    return axios.get(path, curConfig).then((response) =>
                     {
-                        return response.data;
+                        return JSON.stringify(response.data);
                     });
-                    break;
                 }
             case 'PUT':
                 {
                     if(data != null)
                     {
                         data = new TextEncoder().encode(JSON.stringify(data));
-                        axios.put(path, data, curConfig).then((response) =>
+                        return axios.put(path, data, curConfig).then((response) =>
                         {
                             return response.data;
                         })
                     }
                     else
                     {
-                        axios.put(path, null, curConfig).then((response) =>
+                        return axios.put(path, "", curConfig).then((response) =>
                         {
                             return response.data;
                         });
                     }
-
-                    break;
                 }
             default:
                 {
@@ -67,22 +65,12 @@ export class HabiticaAPI
         return null;
     }
 
-    user()
-    {
-        return this.v3_request('GET', "/user");
-    }
-
-    tasks()
+    async GetAllTasks(): Promise<string>
     {
         return this.v3_request('GET', "/tasks/user");
     }
 
-    task(task_id: string)
-    {
-        return this.v3_request('GET', "/tasks/" + task_id)
-    }
-
-    update_task(task_id: string, data)
+    async update_task(task_id: string, data): Promise<void>
     {
         return this.v3_request('PUT', "/tasks/" + task_id, data);
     }
