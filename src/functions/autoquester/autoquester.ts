@@ -3,7 +3,6 @@ import {WebhookConvert, WebhookUpdateData} from "../../WebhookUpdateData"
 import {TasksRequestConvert, TasksRequest, Datum} from "../../TasksRequestData";
 import {HabiticaAPI} from "../../Habitica-Api"
 import dotenv from "dotenv";
-import { table } from 'console';
 import { TagsRequestData } from '../../TagsRequestData';
 
 class MapEntry
@@ -93,7 +92,7 @@ export async function autoquesterFunc(body: string)
                     }
                 }
                 
-                tagsMap.forEach((value, key) =>
+                for(const value of tagsMap.values())
                 {
                     var percentage = 0;
                     if(value.Total > 0)
@@ -104,7 +103,7 @@ export async function autoquesterFunc(body: string)
 
                     var isComplete = percentage == 1.0 ? true : false;
 
-                    value.ListeningHabits.forEach(async habitTask => 
+                    for(const habitTask of value.ListeningHabits)
                     {
                         habitTask.completed = isComplete;
 
@@ -118,9 +117,9 @@ export async function autoquesterFunc(body: string)
                             habitTask.notes = modNotes;
                         }
 
-                        await currentAPI.Update_Task(habitTask.id, habitTask);
-                    });
-                });
+                        await currentAPI.Update_Task(habitTask.id, JSON.stringify(habitTask));
+                    };
+                }
             }
         }
     }

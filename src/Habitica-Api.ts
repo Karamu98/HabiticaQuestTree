@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { error } from "console";
 import { TagsRequestConvert, TagsRequestData } from "./TagsRequestData";
 import { TasksRequest, TasksRequestConvert } from "./TasksRequestData";
 
@@ -16,12 +15,13 @@ export class HabiticaAPI
             {
                 'Content-Type': 'application/json',
                 'x-api-user': this.user_id,
-                'x-api-key': this.api_token
-            }
+                'x-api-key': this.api_token,
+            },
+            timeout: 5000
         }
     }
 
-    private v3_request(method: HTTPNAMES, path: string, data = null): Promise<any>
+    private v3_request(method: HTTPNAMES, path: string, data: string = null): Promise<any>
     {
         var curConfig = this.default_config;
 
@@ -48,9 +48,9 @@ export class HabiticaAPI
                 {
                     if(data != null)
                     {
-                        data = new TextEncoder().encode(JSON.stringify(data));
                         return axios.put(path, data, curConfig).then((response) =>
                         {
+                            console.log(`PUT Responce: ${response.status}: ${response.statusText}`);
                             return response.data;
                         }).catch((error) =>
                         {
@@ -108,7 +108,7 @@ export class HabiticaAPI
         }
     }
 
-    async Update_Task(task_id: string, data = null): Promise<void>
+    async Update_Task(task_id: string, data: string = null): Promise<void>
     {
         try
         {
@@ -122,6 +122,8 @@ export class HabiticaAPI
                 console.log(`Sending PUT to task (${task_id}) with no data`);
                 await this.v3_request('PUT', "/tasks/" + task_id, null);
             }
+
+            console.log("PUT UpdateTask completed");
         }
         catch(error)
         {
