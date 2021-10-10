@@ -13,5 +13,8 @@ app.listen(PORT, () => {
 
 app.post("/test", async (request, response) =>
 {    
-    await autoquesterFunc(JSON.stringify(request.body));
+    console.log(`Got request ${request.baseUrl}`);
+    autoquesterFunc(JSON.stringify(request.body));
+
+    response.status(200).send();
 })

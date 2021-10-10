@@ -3,3 +3,4 @@
 .netlify
 /src/functions/Autoquester/.env
 .env
+obj/

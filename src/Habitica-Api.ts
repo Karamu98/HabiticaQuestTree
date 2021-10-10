@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { TagsRequestConvert, TagsRequestData } from "./TagsRequestData";
+import { TasksRequest, TasksRequestConvert } from "./TasksRequestData";
 
 export class HabiticaAPI
 {
@@ -65,14 +67,52 @@ export class HabiticaAPI
         return null;
     }
 
-    async GetAllTasks(): Promise<string>
+    async GetAllTasks(): Promise<TasksRequest>
     {
-        return this.v3_request('GET', "/tasks/user");
+        console.log("Getting all tasks...");
+        return this.v3_request('GET', "/tasks/user").then((rawData) =>
+        {
+            var parsedData: TasksRequest = null;
+            if(rawData != null)
+            {
+                parsedData = TasksRequestConvert.ToData(rawData);
+            }
+            else
+            {
+                throw new Error("Couldn't parse task request data");                
+            }
+
+            console.log(`Fetched all tasks: ${parsedData}`);
+
+            return parsedData;
+        });
     }
 
-    async update_task(task_id: string, data): Promise<void>
+    async Update_Task(task_id: string, data): Promise<void>
     {
+        console.log(`Updating ${task_id}, with data: ${data}`);
         return this.v3_request('PUT', "/tasks/" + task_id, data);
+    }
+
+    async GetAllTags(): Promise<TagsRequestData>
+    {
+        console.log("Getting all tags...");
+        return this.v3_request('GET', "/tags").then((rawData) => 
+        {
+            var parsedData: TagsRequestData = null;
+            if(rawData != null)
+            {
+                parsedData = TagsRequestConvert.ToData(rawData);
+            }
+            else
+            {
+                throw new Error("Couldn't parse tags request data");
+            }
+
+            console.log(`Fetched all tags: ${parsedData}`);
+
+            return parsedData;
+        });
     }
 
 
