@@ -1,6 +1,5 @@
 # example netlify.toml
 [build]
-  command = "tsc: build - tsconfig.json"
   functions = "./src/functions"
   publish = "./src"
 
