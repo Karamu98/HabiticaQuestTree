@@ -16,7 +16,7 @@ const PROGRESS_BAR_TAG = `https://progress-bar.dev/`;
 export async function autoquesterFunc(body: string)
 {
     dotenv.config();
-    
+
     try
     {
         const allData: WebhookUpdateData = WebhookConvert.ToData(body);
@@ -127,7 +127,7 @@ export const handler: Handler = async(event, context) =>
 {
     var body = event.body;
     console.log(body);
-    body = JSON.stringify(event.body);
+    body = JSON.stringify(event);
 
     await autoquesterFunc(body);
 
