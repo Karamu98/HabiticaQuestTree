@@ -1,0 +1,1 @@
+export type TaskType = "daily" | "habit" | "todo" | "reward";
