@@ -12,8 +12,6 @@ app.listen(PORT, () => {
 
 
 app.post("/test", async (request, response) =>
-{
-    var event = JSON.stringify(request.body);
-    
-    await autoquesterFunc(event, null);
+{    
+    await autoquesterFunc(JSON.stringify(request.body));
 })

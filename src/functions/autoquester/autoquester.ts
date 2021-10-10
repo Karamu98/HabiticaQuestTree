@@ -2,6 +2,7 @@ import { Handler } from '@netlify/functions'
 import {WebhookConvert, WebhookUpdateData} from "../../WebhookUpdateData"
 import {TasksRequestConvert, TasksRequest, Datum} from "../../TasksRequestData";
 import {HabiticaAPI} from "../../Habitica-Api"
+import dotenv from "dotenv";
 
 class MapEntry
 {
@@ -12,11 +13,13 @@ class MapEntry
 
 const PROGRESS_BAR_TAG = `https://progress-bar.dev/`;
 
-export const autoquesterFunc = async(event, context) =>
+export async function autoquesterFunc(body: string)
 {
+    dotenv.config();
+    
     try
     {
-        const allData: WebhookUpdateData = WebhookConvert.ToData(event);
+        const allData: WebhookUpdateData = WebhookConvert.ToData(body);
         if(allData.task.type == 'daily')
         {
             if(allData.task.tags.length > 0)
@@ -118,10 +121,17 @@ export const autoquesterFunc = async(event, context) =>
     {
         console.log(e);
     }
+}
+
+export const handler: Handler = async(event, context) =>
+{
+    var body = event.body;
+    console.log(body);
+    body = JSON.stringify(event.body);
+
+    await autoquesterFunc(body);
 
     return {
         statusCode: 200
     }
 }
-
-export const handler: Handler = autoquesterFunc;

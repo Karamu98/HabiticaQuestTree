@@ -22,7 +22,6 @@ app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 });
 app.post("/test", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    var event = JSON.stringify(request.body);
-    yield (0, autoquester_1.autoquesterFunc)(event, null);
+    yield (0, autoquester_1.autoquesterFunc)(JSON.stringify(request.body));
 }));
 //# sourceMappingURL=main.js.map
